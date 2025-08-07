@@ -7,26 +7,42 @@ import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
 
-BASE_URL = "https://wakatime.com/api/v1"
+import base64
 
 
 class WakatimeApiClient:
     """API client for Wakatime."""
 
-    def __init__(self, api_key: str, session: aiohttp.ClientSession) -> None:
+    def _prepare_auth_and_url(self, api_key: str, base_url: str) -> tuple[str, str]:
+        """Prepare authentication and URL for different API providers."""
+        if "wakatime.com" not in base_url:
+            # Wakapi needs base64 encoded API key
+            b = base64.b64encode(bytes(api_key, 'utf-8'))
+            api_key = b.decode('utf-8')
+            # Wakapi endpoints differ from Wakatime
+            if "compat/wakatime" not in base_url:
+                base_url += "/compat/wakatime/v1"
+        if base_url.endswith("/"):
+            # avoid // in url
+            base_url = base_url[:-1]
+        return api_key, base_url
+
+    def __init__(self, api_key: str, session: aiohttp.ClientSession,
+                 base_url: str = "https://wakatime.com/api/v1") -> None:
         """Initialize the API client."""
+        api_key, base_url = self._prepare_auth_and_url(api_key, base_url)
         self._api_key = api_key
         self._session = session
         self._headers = {"Authorization": f"Basic {api_key}"}
+        self._base_url = base_url
 
     async def _fetch_data(self, endpoint: str) -> dict:
         """Fetch data from the API."""
-        url = f"{BASE_URL}/{endpoint}"
-
+        url = f"{self._base_url}/{endpoint}"
         async with self._session.get(url, headers=self._headers) as response:
             if response.status != 200:
                 _LOGGER.error(
-                    "Error fetching data from Wakatime API: %s", response.status
+                    "Error fetching data from Wakatime API: %s, %s", response.status, url
                 )
                 return {}
 

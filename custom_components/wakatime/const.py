@@ -22,3 +22,5 @@ ICON_WEEKLY = "mdi:calendar-week"
 ICON_PRODUCTIVITY = "mdi:trending-up"
 ICON_ACTIVE_TIME = "mdi:clock-time-eight"
 ICON_STREAK = "mdi:fire"
+
+CONF_BASE_URL = "base_url"

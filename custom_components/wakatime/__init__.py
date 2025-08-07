@@ -15,7 +15,7 @@ from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import WakatimeApiClient
-from .const import DOMAIN, SCAN_INTERVAL
+from .const import DOMAIN, SCAN_INTERVAL, CONF_BASE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,9 +25,9 @@ PLATFORMS = [Platform.SENSOR]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Wakatime from a config entry."""
     api_key = entry.data[CONF_API_KEY]
-
+    base_url = entry.data.get(CONF_BASE_URL, "https://wakatime.com/api/v1")
     session = async_get_clientsession(hass)
-    client = WakatimeApiClient(api_key, session)
+    client = WakatimeApiClient(api_key, session, base_url=base_url)
 
     coordinator = WakatimeDataUpdateCoordinator(hass, client=client)
     await coordinator.async_config_entry_first_refresh()

@@ -12,7 +12,7 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import WakatimeApiClient
-from .const import DOMAIN, NAME
+from .const import DOMAIN, NAME, CONF_BASE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,9 +29,10 @@ class WakatimeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
+            base_url = user_input.get(CONF_BASE_URL, "https://wakatime.com/api/v1")
             api_key = user_input[CONF_API_KEY]
             session = async_get_clientsession(self.hass)
-            client = WakatimeApiClient(api_key, session)
+            client = WakatimeApiClient(api_key, session, base_url=base_url)
 
             try:
                 user_info = await client.get_user_info()
@@ -54,6 +55,7 @@ class WakatimeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_API_KEY): str,
+                    vol.Optional(CONF_BASE_URL, default="https://wakatime.com/api/v1"): str,
                 }
             ),
             errors=errors,
