@@ -97,3 +97,9 @@ async def test_reauth_flow(hass, mock_api):
     assert result2["type"] is FlowResultType.ABORT
     assert result2["reason"] == "reauth_successful"
     assert entry.data[CONF_API_KEY] == "new"
+
+    # The reauth reloads the entry, spawning a coordinator with a refresh
+    # timer; unload it so no timer lingers past teardown.
+    await hass.async_block_till_done()
+    await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
