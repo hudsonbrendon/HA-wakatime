@@ -45,13 +45,32 @@ To obtain your Wakatime API key:
 
 ## Sensors
 
-This integration provides the following sensors:
+Static sensors (each can be toggled on/off in the integration **Options**):
 
-- **Daily Total**: Total coding time for the day
-- **Top Language**: Your most used programming language
-- **Top Project**: Your most active project
-- **Top Editor**: Your most used code editor
-- **Top Operating System**: Your most used operating system
+- **Daily Total** — coding time today (seconds, attr: human-readable)
+- **Range Total** — total coding time over the selected range
+- **Daily Average** — average coding time per day over the range
+- **All-Time Total** — total coding time ever recorded
+- **Best Day** — date of your most productive day (attrs: total seconds, text)
+- **Top Language / Project / Editor / Operating System / Category / Machine / Dependency** — each with a `breakdown` attribute listing the top 10
+- **Languages Count / Projects Count / Active Machines** — counters
+- **Productivity Level** — High / Medium / Low derived from your daily average
+
+Dynamic sensors:
+
+- **Goal sensors** — one per WakaTime goal you choose to monitor, state = goal status
+- **Project sensors** — one per project you choose to monitor, state = coding time over the range
+
+## Options
+
+After adding the integration, open its **Configure** dialog to set:
+
+- **Update interval** (5–1440 minutes, default 30)
+- **Stats range** (last 7 days / 30 days / 6 months / year / all time)
+- **Enabled sensors** (pick which static sensors to create)
+- **Monitored goals** and **Monitored projects**
+
+Changing options reloads the integration automatically.
 
 ## Automations
 
@@ -62,7 +81,7 @@ automation:
   - alias: "Coding Break Reminder"
     trigger:
       platform: numeric_state
-      entity_id: sensor.wakatime_daily_total
+      entity_id: sensor.<your_wakatime_user>_daily_total
       above: 14400  # 4 hours in seconds
     action:
       service: notify.mobile_app
