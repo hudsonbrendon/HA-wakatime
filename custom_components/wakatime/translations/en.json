@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "Connect to Wakatime",
-                "description": "Enter your Wakatime API key",
+                "description": "Enter your Wakatime API key. You can find it in your Wakatime account settings.",
                 "data": {
                     "api_key": "API Key"
                 }
@@ -11,44 +11,56 @@
         },
         "error": {
             "invalid_auth": "Invalid authentication",
+            "cannot_connect": "Failed to connect to Wakatime",
             "unknown": "Unexpected error"
         },
         "abort": {
-            "already_configured": "Wakatime account is already configured"
+            "already_configured": "This Wakatime account is already configured"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Wakatime options",
+                "data": {
+                    "scan_interval": "Update interval (minutes)",
+                    "stats_range": "Stats range",
+                    "enabled_sensors": "Enabled sensors",
+                    "monitored_goals": "Monitored goals",
+                    "monitored_projects": "Monitored projects"
+                }
+            }
+        }
+    },
+    "selector": {
+        "stats_range": {
+            "options": {
+                "last_7_days": "Last 7 days",
+                "last_30_days": "Last 30 days",
+                "last_6_months": "Last 6 months",
+                "last_year": "Last year",
+                "all_time": "All time"
+            }
         }
     },
     "entity": {
         "sensor": {
-            "daily_total": {
-                "name": "Daily Total"
-            },
-            "top_language": {
-                "name": "Top Language"
-            },
-            "top_project": {
-                "name": "Top Project"
-            },
-            "top_editor": {
-                "name": "Top Editor"
-            },
-            "top_operating_system": {
-                "name": "Top Operating System"
-            },
-            "top_category": {
-                "name": "Top Category"
-            },
-            "weekly_average": {
-                "name": "Weekly Average"
-            },
-            "productivity_level": {
-                "name": "Productivity Level"
-            },
-            "most_active_time": {
-                "name": "Most Active Time"
-            },
-            "current_streak": {
-                "name": "Current Streak"
-            }
+            "daily_total": { "name": "Daily Total" },
+            "range_total": { "name": "Range Total" },
+            "daily_average": { "name": "Daily Average" },
+            "all_time_total": { "name": "All-Time Total" },
+            "best_day": { "name": "Best Day" },
+            "top_language": { "name": "Top Language" },
+            "top_project": { "name": "Top Project" },
+            "top_editor": { "name": "Top Editor" },
+            "top_operating_system": { "name": "Top Operating System" },
+            "top_category": { "name": "Top Category" },
+            "top_machine": { "name": "Top Machine" },
+            "top_dependency": { "name": "Top Dependency" },
+            "languages_count": { "name": "Languages Count" },
+            "projects_count": { "name": "Projects Count" },
+            "active_machines": { "name": "Active Machines" },
+            "productivity_level": { "name": "Productivity Level" }
         }
     }
 }
