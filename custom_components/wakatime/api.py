@@ -1,13 +1,24 @@
 """API client for Wakatime."""
 
+from __future__ import annotations
+
+import base64
 import logging
-from datetime import datetime, timedelta
 
 import aiohttp
+from homeassistant.util import dt as dt_util
+
+from .const import BASE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
-BASE_URL = "https://wakatime.com/api/v1"
+
+class WakatimeApiError(Exception):
+    """Generic Wakatime API error."""
+
+
+class WakatimeApiAuthError(WakatimeApiError):
+    """Authentication error talking to the Wakatime API."""
 
 
 class WakatimeApiClient:
@@ -17,50 +28,53 @@ class WakatimeApiClient:
         """Initialize the API client."""
         self._api_key = api_key
         self._session = session
-        self._headers = {"Authorization": f"Basic {api_key}"}
+        encoded = base64.b64encode(api_key.encode()).decode()
+        self._headers = {"Authorization": f"Basic {encoded}"}
 
     async def _fetch_data(self, endpoint: str) -> dict:
-        """Fetch data from the API."""
+        """Fetch and parse data from the API, raising typed errors."""
         url = f"{BASE_URL}/{endpoint}"
-
-        async with self._session.get(url, headers=self._headers) as response:
-            if response.status != 200:
-                _LOGGER.error(
-                    "Error fetching data from Wakatime API: %s", response.status
-                )
-                return {}
-
-            data = await response.json()
-            return data
+        try:
+            async with self._session.get(url, headers=self._headers) as response:
+                if response.status in (401, 403):
+                    raise WakatimeApiAuthError(
+                        f"Authentication failed ({response.status})"
+                    )
+                if response.status != 200:
+                    raise WakatimeApiError(
+                        f"Error fetching {endpoint}: HTTP {response.status}"
+                    )
+                return await response.json()
+        except aiohttp.ClientError as err:
+            raise WakatimeApiError(f"Connection error: {err}") from err
 
     async def get_user_info(self) -> dict:
-        """Get user information."""
+        """Get the current user."""
         return await self._fetch_data("users/current")
 
-    async def get_summary(self) -> dict:
-        """Get summary for today."""
-        today = datetime.now().strftime("%Y-%m-%d")
-        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        return await self._fetch_data(
-            f"users/current/summaries?start={yesterday}&end={today}"
-        )
+    async def get_stats(self, stats_range: str = "last_7_days") -> dict:
+        """Get aggregated stats for the given range."""
+        return await self._fetch_data(f"users/current/stats/{stats_range}")
 
-    async def get_stats(self) -> dict:
-        """Get stats for the current user."""
-        return await self._fetch_data("users/current/stats")
-
-    async def get_last_7_days(self) -> dict:
-        """Get stats for the last 7 days."""
-        end_date = datetime.now().strftime("%Y-%m-%d")
-        start_date = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    async def get_summary_today(self) -> dict:
+        """Get today's summary."""
+        today = dt_util.now().strftime("%Y-%m-%d")
         return await self._fetch_data(
-            f"users/current/summaries?start={start_date}&end={end_date}"
+            f"users/current/summaries?start={today}&end={today}"
         )
 
     async def get_all_time_since_today(self) -> dict:
-        """Get all time stats."""
+        """Get all-time totals."""
         return await self._fetch_data("users/current/all_time_since_today")
 
-    async def get_categories(self) -> dict:
-        """Get category information."""
-        return await self._fetch_data("users/current/categories")
+    async def get_goals(self) -> dict:
+        """Get the user's goals."""
+        return await self._fetch_data("users/current/goals")
+
+    async def get_machine_names(self) -> dict:
+        """Get the user's machines."""
+        return await self._fetch_data("users/current/machine_names")
+
+    async def get_projects(self) -> dict:
+        """Get the user's projects."""
+        return await self._fetch_data("users/current/projects")
