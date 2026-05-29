@@ -72,3 +72,7 @@ async def test_options_flow(hass, mock_api):
     assert result2["type"] is FlowResultType.CREATE_ENTRY
     assert entry.options[CONF_SCAN_INTERVAL] == 15
     assert entry.options[CONF_STATS_RANGE] == "last_30_days"
+
+    await hass.async_block_till_done()
+    await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()

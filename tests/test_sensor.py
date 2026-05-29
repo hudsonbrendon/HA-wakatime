@@ -1,6 +1,7 @@
 """Tests for the Wakatime sensors."""
 
 from homeassistant.const import CONF_API_KEY
+from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.wakatime.const import DOMAIN
@@ -16,40 +17,42 @@ async def _setup(hass):
     return entry
 
 
+def _state(hass, entry, unique_id_suffix):
+    """Look up an entity by its stable unique_id, return its state."""
+    registry = er.async_get(hass)
+    entity_id = registry.async_get_entity_id(
+        "sensor", DOMAIN, f"{entry.entry_id}_{unique_id_suffix}"
+    )
+    assert entity_id is not None, f"no entity registered for {unique_id_suffix}"
+    return hass.states.get(entity_id)
+
+
 async def test_daily_total_sensor(hass, mock_api):
     """Daily total reflects today's summary grand_total."""
-    await _setup(hass)
-    state = hass.states.get("sensor.dev_example_daily_total")
+    entry = await _setup(hass)
+    state = _state(hass, entry, "daily_total")
     assert state is not None
     assert state.state == "3600"
 
 
 async def test_top_language_sensor(hass, mock_api):
     """Top language is the first language and lists the rest as attributes."""
-    await _setup(hass)
-    state = hass.states.get("sensor.dev_example_top_language")
+    entry = await _setup(hass)
+    state = _state(hass, entry, "top_language")
     assert state.state == "Python"
     assert state.attributes["breakdown"][0]["name"] == "Python"
 
 
 async def test_range_total_and_all_time(hass, mock_api):
-    """Range total and all-time total map to stats/all_time totals.
-
-    Without translations loaded HA falls back to device_class ("duration") for
-    the entity name, so the entity_ids are duration / duration_3 rather than
-    range_total / all_time_total.  Ordering matches SENSOR_TYPES: daily_total
-    (index 0, gets "daily_total" from translation_key), range_total (index 1,
-    first pure-duration fallback → "duration"), daily_average (index 2 →
-    "duration_2"), all_time_total (index 3 → "duration_3").
-    """
-    await _setup(hass)
-    assert hass.states.get("sensor.dev_example_duration").state == "36000"
-    assert hass.states.get("sensor.dev_example_duration_3").state == "360000"
+    """Range total and all-time total map to stats/all_time totals."""
+    entry = await _setup(hass)
+    assert _state(hass, entry, "range_total").state == "36000"
+    assert _state(hass, entry, "all_time_total").state == "360000"
 
 
 async def test_goal_sensor_created(hass, mock_api):
-    """A sensor is created for each goal."""
-    await _setup(hass)
-    state = hass.states.get("sensor.dev_example_code_2_hrs_per_day")
+    """A sensor is created for each goal (unique_id suffix goal_<id>)."""
+    entry = await _setup(hass)
+    state = _state(hass, entry, "goal_goal-1")
     assert state is not None
     assert state.state == "success"
