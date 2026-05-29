@@ -37,16 +37,15 @@ class WakatimeApiClient:
         try:
             async with self._session.get(url, headers=self._headers) as response:
                 if response.status in (401, 403):
-                    raise WakatimeApiAuthError(
-                        f"Authentication failed ({response.status})"
-                    )
+                    msg = f"Authentication failed ({response.status})"
+                    raise WakatimeApiAuthError(msg)
                 if response.status != 200:
-                    raise WakatimeApiError(
-                        f"Error fetching {endpoint}: HTTP {response.status}"
-                    )
+                    msg = f"Error fetching {endpoint}: HTTP {response.status}"
+                    raise WakatimeApiError(msg)
                 return await response.json()
         except aiohttp.ClientError as err:
-            raise WakatimeApiError(f"Connection error: {err}") from err
+            msg = f"Connection error: {err}"
+            raise WakatimeApiError(msg) from err
 
     async def get_user_info(self) -> dict:
         """Get the current user."""

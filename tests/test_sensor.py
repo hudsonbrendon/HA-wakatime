@@ -39,7 +39,7 @@ def _state(hass, entry, unique_id_suffix):
     return hass.states.get(entity_id)
 
 
-async def test_daily_total_sensor(hass, mock_api):
+async def test_daily_total_sensor(hass, mock_api) -> None:
     """Daily total reflects today's summary grand_total."""
     entry = await _setup(hass)
     state = _state(hass, entry, "daily_total")
@@ -47,7 +47,7 @@ async def test_daily_total_sensor(hass, mock_api):
     assert state.state == "3600"
 
 
-async def test_top_language_sensor(hass, mock_api):
+async def test_top_language_sensor(hass, mock_api) -> None:
     """Top language is the first language and lists the rest as attributes."""
     entry = await _setup(hass)
     state = _state(hass, entry, "top_language")
@@ -55,20 +55,20 @@ async def test_top_language_sensor(hass, mock_api):
     assert state.attributes["breakdown"][0]["name"] == "Python"
 
 
-async def test_range_total_and_all_time(hass, mock_api):
+async def test_range_total_and_all_time(hass, mock_api) -> None:
     """Range total and all-time total map to stats/all_time totals."""
     entry = await _setup(hass)
     assert _state(hass, entry, "range_total").state == "36000"
     assert _state(hass, entry, "all_time_total").state == "360000"
 
 
-async def test_productivity_level(hass, mock_api):
+async def test_productivity_level(hass, mock_api) -> None:
     """daily_average of 9000s (>7200) maps to Medium."""
     entry = await _setup(hass)
     assert _state(hass, entry, "productivity_level").state == "Medium"
 
 
-async def test_goal_sensor_created(hass, mock_api):
+async def test_goal_sensor_created(hass, mock_api) -> None:
     """A sensor is created for each goal (unique_id suffix goal_<id>)."""
     entry = await _setup(hass)
     state = _state(hass, entry, "goal_goal-1")
@@ -77,7 +77,7 @@ async def test_goal_sensor_created(hass, mock_api):
     assert state.attributes["title"] == "Code 2 hrs per day"
 
 
-async def test_project_sensor_created(hass, mock_api):
+async def test_project_sensor_created(hass, mock_api) -> None:
     """A monitored project gets its own sensor with range coding seconds."""
     entry = await _setup(hass, {CONF_MONITORED_PROJECTS: ["ha-wakatime"]})
     state = _state(hass, entry, "project_ha-wakatime")
@@ -85,7 +85,7 @@ async def test_project_sensor_created(hass, mock_api):
     assert state.state == "21600"
 
 
-async def test_enabled_sensors_filter(hass, mock_api):
+async def test_enabled_sensors_filter(hass, mock_api) -> None:
     """Only sensors listed in CONF_ENABLED_SENSORS are created."""
     entry = await _setup(hass, {CONF_ENABLED_SENSORS: ["daily_total"]})
     assert _state(hass, entry, "daily_total") is not None

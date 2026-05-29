@@ -4,11 +4,9 @@ from __future__ import annotations
 
 import asyncio
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import async_timeout
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -21,6 +19,10 @@ from .const import (
     DOMAIN,
     LOGGER,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
 
 
 class WakatimeDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):

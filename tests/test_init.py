@@ -20,7 +20,7 @@ async def _add_entry(hass):
     return entry
 
 
-async def test_setup_and_unload(hass, mock_api):
+async def test_setup_and_unload(hass, mock_api) -> None:
     """Entry loads, exposes the coordinator, then unloads cleanly."""
     entry = await _add_entry(hass)
     assert entry.state is ConfigEntryState.LOADED

@@ -10,7 +10,7 @@ from custom_components.wakatime.api import WakatimeApiAuthError
 from custom_components.wakatime.const import DOMAIN
 
 
-async def test_user_flow_success(hass):
+async def test_user_flow_success(hass) -> None:
     """A valid key creates an entry titled with the user's email."""
     with patch(
         "custom_components.wakatime.config_flow.WakatimeApiClient.get_user_info",
@@ -28,7 +28,7 @@ async def test_user_flow_success(hass):
     assert result2["data"][CONF_API_KEY] == "waka_key"
 
 
-async def test_user_flow_invalid_auth(hass):
+async def test_user_flow_invalid_auth(hass) -> None:
     """An auth error surfaces the invalid_auth message."""
     with patch(
         "custom_components.wakatime.config_flow.WakatimeApiClient.get_user_info",
@@ -45,7 +45,7 @@ async def test_user_flow_invalid_auth(hass):
     assert result2["errors"]["base"] == "invalid_auth"
 
 
-async def test_options_flow(hass, mock_api):
+async def test_options_flow(hass, mock_api) -> None:
     """The options flow stores the chosen scan interval and range."""
     from homeassistant.const import CONF_API_KEY as _KEY
     from pytest_homeassistant_custom_component.common import MockConfigEntry

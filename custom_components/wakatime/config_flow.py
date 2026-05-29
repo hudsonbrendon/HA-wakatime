@@ -71,9 +71,7 @@ class WakatimeConfigFlow(ConfigFlow, domain=DOMAIN):
                     await self.async_set_unique_id(str(data["id"]))
                     self._abort_if_unique_id_configured()
                     return self.async_create_entry(
-                        title=data.get("email")
-                        or data.get("username")
-                        or "WakaTime",
+                        title=data.get("email") or data.get("username") or "WakaTime",
                         data=user_input,
                     )
 
@@ -85,7 +83,7 @@ class WakatimeConfigFlow(ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:  # noqa: ARG004
         """Return the options flow handler."""
         return WakatimeOptionsFlow()
 
@@ -111,17 +109,13 @@ class WakatimeOptionsFlow(OptionsFlow):
         goal_titles = [
             g.get("title") or str(g.get("id")) for g in data.get("goals", [])
         ]
-        project_names = [
-            p["name"] for p in data.get("projects", []) if p.get("name")
-        ]
+        project_names = [p["name"] for p in data.get("projects", []) if p.get("name")]
 
         schema = vol.Schema(
             {
                 vol.Optional(
                     CONF_SCAN_INTERVAL,
-                    default=options.get(
-                        CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-                    ),
+                    default=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_SCAN_INTERVAL,

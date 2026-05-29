@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -13,11 +12,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import UnitOfTime
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import StateType
 
-from . import WakatimeConfigEntry
 from .const import (
     CONF_ENABLED_SENSORS,
     CONF_MONITORED_GOALS,
@@ -37,8 +32,17 @@ from .const import (
     ICON_PROJECT,
     ICON_TOTAL,
 )
-from .coordinator import WakatimeDataUpdateCoordinator
 from .entity import WakatimeEntity
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from homeassistant.helpers.typing import StateType
+
+    from . import WakatimeConfigEntry
+    from .coordinator import WakatimeDataUpdateCoordinator
 
 
 def _today_seconds(data: dict) -> int:
@@ -135,9 +139,7 @@ SENSOR_TYPES: tuple[WakatimeSensorEntityDescription, ...] = (
         icon=ICON_AVERAGE,
         value_fn=lambda d: int(d.get("stats", {}).get("daily_average", 0)),
         attr_fn=lambda d: {
-            "human_readable": d.get("stats", {}).get(
-                "human_readable_daily_average"
-            )
+            "human_readable": d.get("stats", {}).get("human_readable_daily_average")
         },
     ),
     WakatimeSensorEntityDescription(
@@ -249,7 +251,7 @@ SENSOR_TYPES: tuple[WakatimeSensorEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: WakatimeConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
@@ -265,16 +267,20 @@ async def async_setup_entry(
     ]
 
     monitored_goals = options.get(CONF_MONITORED_GOALS)
-    for goal in coordinator.data.get("goals", []):
-        goal_id = goal.get("id")
-        if not goal_id:
-            continue
-        title = goal.get("title") or str(goal_id)
-        if monitored_goals is None or title in monitored_goals:
-            entities.append(WakatimeGoalSensor(coordinator, goal_id, title))
+    entities.extend(
+        WakatimeGoalSensor(coordinator, goal_id, goal.get("title") or str(goal_id))
+        for goal in coordinator.data.get("goals", [])
+        if (goal_id := goal.get("id"))
+        and (
+            monitored_goals is None
+            or (goal.get("title") or str(goal_id)) in monitored_goals
+        )
+    )
 
-    for name in options.get(CONF_MONITORED_PROJECTS) or []:
-        entities.append(WakatimeProjectSensor(coordinator, name))
+    entities.extend(
+        WakatimeProjectSensor(coordinator, name)
+        for name in options.get(CONF_MONITORED_PROJECTS) or []
+    )
 
     async_add_entities(entities)
 
@@ -377,9 +383,7 @@ class WakatimeProjectSensor(WakatimeEntity, SensorEntity):
         super().__init__(coordinator)
         self._project_name = project_name
         self._attr_name = project_name
-        self._attr_unique_id = (
-            f"{coordinator.entry.entry_id}_project_{project_name}"
-        )
+        self._attr_unique_id = f"{coordinator.entry.entry_id}_project_{project_name}"
 
     def _project(self) -> dict:
         if not self.coordinator.data:

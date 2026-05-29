@@ -10,18 +10,21 @@ pytest_plugins = "pytest_homeassistant_custom_component"
 
 
 @pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations):
+def auto_enable_custom_integrations(enable_custom_integrations) -> None:
     """Enable loading the wakatime custom integration in every test."""
-    yield
+    return
 
 
 @pytest.fixture
 def mock_api():
     """Patch WakatimeApiClient everywhere it is imported with canned data."""
-    with patch(
-        "custom_components.wakatime.WakatimeApiClient", autospec=True
-    ) as client_cls, patch(
-        "custom_components.wakatime.config_flow.WakatimeApiClient", new=client_cls
+    with (
+        patch(
+            "custom_components.wakatime.WakatimeApiClient", autospec=True
+        ) as client_cls,
+        patch(
+            "custom_components.wakatime.config_flow.WakatimeApiClient", new=client_cls
+        ),
     ):
         client = client_cls.return_value
         client.get_user_info = AsyncMock(return_value=const.USER_INFO)
