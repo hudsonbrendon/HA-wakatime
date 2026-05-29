@@ -2,82 +2,37 @@
 
 from __future__ import annotations
 
-import logging
-from datetime import timedelta
-
-import async_timeout
-import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import WakatimeApiClient
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
+from .coordinator import WakatimeDataUpdateCoordinator
 
 PLATFORMS = [Platform.SENSOR]
 
+type WakatimeConfigEntry = ConfigEntry[WakatimeDataUpdateCoordinator]
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+
+async def async_setup_entry(hass: HomeAssistant, entry: WakatimeConfigEntry) -> bool:
     """Set up Wakatime from a config entry."""
-    api_key = entry.data[CONF_API_KEY]
-
-    session = async_get_clientsession(hass)
-    client = WakatimeApiClient(api_key, session)
-
-    coordinator = WakatimeDataUpdateCoordinator(hass, client=client)
+    client = WakatimeApiClient(entry.data[CONF_API_KEY], async_get_clientsession(hass))
+    coordinator = WakatimeDataUpdateCoordinator(hass, entry, client)
     await coordinator.async_config_entry_first_refresh()
 
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    entry.runtime_data = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: WakatimeConfigEntry) -> bool:
     """Unload a config entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-class WakatimeDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching Wakatime data."""
-
-    def __init__(self, hass: HomeAssistant, client: WakatimeApiClient) -> None:
-        """Initialize."""
-        self.client = client
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=DOMAIN,
-            update_interval=timedelta(minutes=DEFAULT_SCAN_INTERVAL),
-        )
-
-    async def _async_update_data(self):
-        """Update data via library."""
-        try:
-            async with async_timeout.timeout(10):
-                summary = await self.client.get_summary()
-                stats = await self.client.get_stats()
-                user_info = await self.client.get_user_info()
-                last_7_days = await self.client.get_last_7_days()
-                all_time = await self.client.get_all_time_since_today()
-
-                return {
-                    "summary": summary,
-                    "stats": stats,
-                    "user_info": user_info,
-                    "last_7_days": last_7_days,
-                    "all_time": all_time,
-                }
-        except Exception as err:
-            raise UpdateFailed(f"Error communicating with API: {err}") from err
+async def async_reload_entry(hass: HomeAssistant, entry: WakatimeConfigEntry) -> None:
+    """Reload the entry when its options change."""
+    await hass.config_entries.async_reload(entry.entry_id)
