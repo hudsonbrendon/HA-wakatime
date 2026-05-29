@@ -26,7 +26,6 @@ class WakatimeApiClient:
 
     def __init__(self, api_key: str, session: aiohttp.ClientSession) -> None:
         """Initialize the API client."""
-        self._api_key = api_key
         self._session = session
         encoded = base64.b64encode(api_key.encode()).decode()
         self._headers = {"Authorization": f"Basic {encoded}"}

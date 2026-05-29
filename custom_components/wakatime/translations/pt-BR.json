@@ -7,6 +7,13 @@
                 "data": {
                     "api_key": "Chave API"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Reautenticar no Wakatime",
+                "description": "Sua chave de API Wakatime parou de funcionar. Digite uma nova.",
+                "data": {
+                    "api_key": "Chave API"
+                }
             }
         },
         "error": {
@@ -15,7 +22,9 @@
             "unknown": "Erro inesperado"
         },
         "abort": {
-            "already_configured": "Esta conta Wakatime já está configurada"
+            "already_configured": "Esta conta Wakatime já está configurada",
+            "reauth_successful": "Reautenticação concluída com sucesso",
+            "wrong_account": "A chave de API pertence a outra conta Wakatime"
         }
     },
     "options": {

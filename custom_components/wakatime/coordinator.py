@@ -6,7 +6,6 @@ import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-import async_timeout
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -42,6 +41,7 @@ class WakatimeDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             hass,
             LOGGER,
             name=DOMAIN,
+            config_entry=entry,
             update_interval=timedelta(minutes=scan_interval),
         )
 
@@ -53,7 +53,7 @@ class WakatimeDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch all endpoints in parallel and normalize the result."""
         try:
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 (
                     user_info,
                     stats,

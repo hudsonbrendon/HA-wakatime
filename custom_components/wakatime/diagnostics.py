@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from . import WakatimeConfigEntry
 
-TO_REDACT = {CONF_API_KEY, "email", "ip", "id"}
+TO_REDACT = {CONF_API_KEY, "email", "ip"}
 
 
 async def async_get_config_entry_diagnostics(

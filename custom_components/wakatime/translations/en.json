@@ -7,6 +7,13 @@
                 "data": {
                     "api_key": "API Key"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Re-authenticate Wakatime",
+                "description": "Your Wakatime API key stopped working. Enter a new one.",
+                "data": {
+                    "api_key": "API Key"
+                }
             }
         },
         "error": {
@@ -15,7 +22,9 @@
             "unknown": "Unexpected error"
         },
         "abort": {
-            "already_configured": "This Wakatime account is already configured"
+            "already_configured": "This Wakatime account is already configured",
+            "reauth_successful": "Re-authentication was successful",
+            "wrong_account": "The API key is for a different Wakatime account"
         }
     },
     "options": {

@@ -76,3 +76,24 @@ async def test_options_flow(hass, mock_api) -> None:
     await hass.async_block_till_done()
     await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
+
+
+async def test_reauth_flow(hass, mock_api):
+    """Reauth replaces the stored API key when the new key validates."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    entry = MockConfigEntry(
+        domain=DOMAIN, data={CONF_API_KEY: "old"}, unique_id="user-123"
+    )
+    entry.add_to_hass(hass)
+
+    result = await entry.start_reauth_flow(hass)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reauth_confirm"
+
+    result2 = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_API_KEY: "new"}
+    )
+    assert result2["type"] is FlowResultType.ABORT
+    assert result2["reason"] == "reauth_successful"
+    assert entry.data[CONF_API_KEY] == "new"
