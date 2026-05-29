@@ -266,9 +266,12 @@ async def async_setup_entry(
 
     monitored_goals = options.get(CONF_MONITORED_GOALS)
     for goal in coordinator.data.get("goals", []):
-        title = goal.get("title") or str(goal.get("id"))
+        goal_id = goal.get("id")
+        if not goal_id:
+            continue
+        title = goal.get("title") or str(goal_id)
         if monitored_goals is None or title in monitored_goals:
-            entities.append(WakatimeGoalSensor(coordinator, goal.get("id"), title))
+            entities.append(WakatimeGoalSensor(coordinator, goal_id, title))
 
     for name in options.get(CONF_MONITORED_PROJECTS) or []:
         entities.append(WakatimeProjectSensor(coordinator, name))
@@ -327,6 +330,8 @@ class WakatimeGoalSensor(WakatimeEntity, SensorEntity):
         self._attr_unique_id = f"{coordinator.entry.entry_id}_goal_{goal_id}"
 
     def _goal(self) -> dict:
+        if not self.coordinator.data:
+            return {}
         for goal in self.coordinator.data.get("goals", []):
             if goal.get("id") == self._goal_id:
                 return goal
@@ -344,7 +349,7 @@ class WakatimeGoalSensor(WakatimeEntity, SensorEntity):
         goal = self._goal()
         if not goal:
             return None
-        return {
+        attrs = {
             "title": goal.get("title"),
             "type": goal.get("type"),
             "is_enabled": goal.get("is_enabled"),
@@ -352,6 +357,7 @@ class WakatimeGoalSensor(WakatimeEntity, SensorEntity):
             "delta": goal.get("delta"),
             "range": goal.get("range"),
         }
+        return {k: v for k, v in attrs.items() if v is not None}
 
 
 class WakatimeProjectSensor(WakatimeEntity, SensorEntity):
@@ -370,11 +376,14 @@ class WakatimeProjectSensor(WakatimeEntity, SensorEntity):
         """Initialize the project sensor."""
         super().__init__(coordinator)
         self._project_name = project_name
-        slug = project_name.lower().replace(" ", "_")
-        self._attr_name = f"Project {project_name}"
-        self._attr_unique_id = f"{coordinator.entry.entry_id}_project_{slug}"
+        self._attr_name = project_name
+        self._attr_unique_id = (
+            f"{coordinator.entry.entry_id}_project_{project_name}"
+        )
 
     def _project(self) -> dict:
+        if not self.coordinator.data:
+            return {}
         for project in self.coordinator.data.get("stats", {}).get("projects", []):
             if project.get("name") == self._project_name:
                 return project
