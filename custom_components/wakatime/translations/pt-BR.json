@@ -3,7 +3,14 @@
         "step": {
             "user": {
                 "title": "Conectar ao Wakatime",
-                "description": "Digite sua chave de API Wakatime",
+                "description": "Digite sua chave de API Wakatime. Você a encontra nas configurações da sua conta Wakatime.",
+                "data": {
+                    "api_key": "Chave API"
+                }
+            },
+            "reauth_confirm": {
+                "title": "Reautenticar no Wakatime",
+                "description": "Sua chave de API Wakatime parou de funcionar. Digite uma nova.",
                 "data": {
                     "api_key": "Chave API"
                 }
@@ -11,44 +18,58 @@
         },
         "error": {
             "invalid_auth": "Autenticação inválida",
+            "cannot_connect": "Falha ao conectar ao Wakatime",
             "unknown": "Erro inesperado"
         },
         "abort": {
-            "already_configured": "Conta Wakatime já está configurada"
+            "already_configured": "Esta conta Wakatime já está configurada",
+            "reauth_successful": "Reautenticação concluída com sucesso",
+            "wrong_account": "A chave de API pertence a outra conta Wakatime"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Opções do Wakatime",
+                "data": {
+                    "scan_interval": "Intervalo de atualização (minutos)",
+                    "stats_range": "Período das estatísticas",
+                    "enabled_sensors": "Sensores habilitados",
+                    "monitored_goals": "Metas monitoradas",
+                    "monitored_projects": "Projetos monitorados"
+                }
+            }
+        }
+    },
+    "selector": {
+        "stats_range": {
+            "options": {
+                "last_7_days": "Últimos 7 dias",
+                "last_30_days": "Últimos 30 dias",
+                "last_6_months": "Últimos 6 meses",
+                "last_year": "Último ano",
+                "all_time": "Desde o início"
+            }
         }
     },
     "entity": {
         "sensor": {
-            "daily_total": {
-                "name": "Total diário"
-            },
-            "top_language": {
-                "name": "Linguagem principal"
-            },
-            "top_project": {
-                "name": "Projeto principal"
-            },
-            "top_editor": {
-                "name": "Editor principal"
-            },
-            "top_operating_system": {
-                "name": "Sistema operacional principal"
-            },
-            "top_category": {
-                "name": "Categoria principal"
-            },
-            "weekly_average": {
-                "name": "Média semanal"
-            },
-            "productivity_level": {
-                "name": "Nível de produtividade"
-            },
-            "most_active_time": {
-                "name": "Horário mais ativo"
-            },
-            "current_streak": {
-                "name": "Sequência atual"
-            }
+            "daily_total": { "name": "Total diário" },
+            "range_total": { "name": "Total do período" },
+            "daily_average": { "name": "Média diária" },
+            "all_time_total": { "name": "Total geral" },
+            "best_day": { "name": "Melhor dia" },
+            "top_language": { "name": "Linguagem principal" },
+            "top_project": { "name": "Projeto principal" },
+            "top_editor": { "name": "Editor principal" },
+            "top_operating_system": { "name": "Sistema operacional principal" },
+            "top_category": { "name": "Categoria principal" },
+            "top_machine": { "name": "Máquina principal" },
+            "top_dependency": { "name": "Dependência principal" },
+            "languages_count": { "name": "Quantidade de linguagens" },
+            "projects_count": { "name": "Quantidade de projetos" },
+            "active_machines": { "name": "Máquinas ativas" },
+            "productivity_level": { "name": "Nível de produtividade" }
         }
     }
 }

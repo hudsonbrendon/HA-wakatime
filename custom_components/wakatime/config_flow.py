@@ -60,3 +60,34 @@ class WakatimeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             ),
             errors=errors,
         )
+
+    async def async_step_reauth(
+        self,
+        entry_data: dict[str, Any],  # noqa: ARG002
+    ) -> ConfigFlowResult:
+        """Start re-authentication when the stored API key stops working."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Confirm re-authentication with a new API key."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            data, error = await self._async_validate(user_input[CONF_API_KEY])
+            if error:
+                errors["base"] = error
+            else:
+                await self.async_set_unique_id(str(data["id"]))
+                self._abort_if_unique_id_mismatch(reason="wrong_account")
+                return self.async_update_reload_and_abort(
+                    self._get_reauth_entry(),
+                    data_updates=user_input,
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema({vol.Required(CONF_API_KEY): str}),
+            errors=errors,
+        )

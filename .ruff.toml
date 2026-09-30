@@ -8,12 +8,30 @@ select = [
 ]
 
 ignore = [
-    "ANN101", # Missing type annotation for `self` in method
+    "ANN101", # Missing type annotation for `self` in method (rule removed in newer ruff, kept for compat)
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
-    "D203", # no-blank-line-before-class (incompatible with formatter)
-    "D212", # multi-line-summary-first-line (incompatible with formatter)
+    "D203",   # no-blank-line-before-class (incompatible with formatter)
+    "D212",   # multi-line-summary-first-line (incompatible with formatter)
     "COM812", # incompatible with formatter
     "ISC001", # incompatible with formatter
+    "EM101",  # Exception must not use a string literal — HA core ignores this
+    "EM102",  # Exception must not use an f-string literal — HA core ignores this
+    "TRY003", # Avoid specifying long messages outside the exception class — stylistic, HA core ignores
+    "PLR2004", # Magic value comparison (HTTP status codes, thresholds) — acceptable per HA convention
+]
+
+[lint.per-file-ignores]
+"tests/**" = [
+    "S101",   # assert — asserts are the point of tests
+    "ANN001", # Missing type annotation for function argument — test funcs need no annotations
+    "ANN201", # Missing return type for public function — test funcs need no annotations
+    "ANN202", # Missing return type for private function — test helpers need no annotations
+    "ARG001", # Unused function argument — fixtures inject args that aren't always used directly
+    "SLF001", # Private member access — tests legitimately access private attrs (e.g. _headers)
+    "PLR2004", # Magic value comparison — acceptable in test assertions
+    "D100",   # Missing docstring in public module
+    "D103",   # Missing docstring in public function
+    "E501",   # Line too long — long fixture strings in tests/const.py
 ]
 
 [lint.flake8-pytest-style]
