@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -23,7 +23,7 @@ class WakatimeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
+        self, user_input: Dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
         errors = {}
