@@ -1,4 +1,17 @@
+<p align="center">
+  <img src="custom_components/wakatime/brand/logo@2x.png" alt="Wakatime" height="128">
+</p>
+
 # Wakatime Integration for Home Assistant
+
+[![Tests](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/tests.yml/badge.svg)](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/tests.yml)
+[![Hassfest](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/hassfest.yml/badge.svg)](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/hassfest.yml)
+[![HACS](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/validate.yml/badge.svg)](https://github.com/hudsonbrendon/HA-wakatime/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/HA-wakatime?sort=semver)](https://github.com/hudsonbrendon/HA-wakatime/releases)
+[![Downloads](https://img.shields.io/github/downloads/hudsonbrendon/HA-wakatime/total)](https://github.com/hudsonbrendon/HA-wakatime/releases)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.2.4%2B-18BCF2?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![License](https://img.shields.io/github/license/hudsonbrendon/HA-wakatime)](LICENSE)
 
 This Home Assistant integration allows you to monitor your coding activity through the Wakatime API.
 
@@ -12,6 +25,9 @@ This Home Assistant integration allows you to monitor your coding activity throu
 - Multi-language support (English, Brazilian Portuguese)
 
 ## Installation
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hudsonbrendon&repository=HA-wakatime&category=integration)
+[![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=wakatime)
 
 ### HACS (Recommended)
 

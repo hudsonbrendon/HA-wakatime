@@ -1,4 +1,4 @@
-"""Base entity for the Wakatime integration."""
+"""Base entity for the Wakatime integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

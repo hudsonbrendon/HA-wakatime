@@ -1,4 +1,4 @@
-"""The Wakatime integration."""
+"""The Wakatime integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

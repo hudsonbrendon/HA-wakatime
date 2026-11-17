@@ -1,4 +1,4 @@
-"""DataUpdateCoordinator for the Wakatime integration."""
+"""DataUpdateCoordinator for the Wakatime integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

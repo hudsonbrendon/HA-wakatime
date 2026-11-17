@@ -1,4 +1,4 @@
-"""Diagnostics support for the Wakatime integration."""
+"""Diagnostics support for the Wakatime integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

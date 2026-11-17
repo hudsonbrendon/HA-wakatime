@@ -1,4 +1,4 @@
-"""API client for Wakatime."""
+"""API client for Wakatime."""  # noqa: CPY001
 
 from __future__ import annotations
 

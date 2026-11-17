@@ -1,4 +1,4 @@
-"""Config and options flow for the Wakatime integration."""
+"""Config and options flow for the Wakatime integration."""  # noqa: CPY001
 
 from __future__ import annotations
 
@@ -138,7 +138,7 @@ class WakatimeOptionsFlow(OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         # Local import avoids a circular import at module load time.
-        from .sensor import SENSOR_TYPES
+        from .sensor import SENSOR_TYPES  # noqa: PLC0415
 
         coordinator = getattr(self.config_entry, "runtime_data", None)
         data = coordinator.data if (coordinator and coordinator.data) else {}
